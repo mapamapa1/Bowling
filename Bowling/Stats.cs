@@ -23,19 +23,14 @@ namespace Bowling
 
                 string userInput = Console.ReadLine();
 
-
-
                 if (userInput.IsNullOrEmpty())
                 {
-
 
                 }
                 else if(userInput == "exit")
                 {
                     return;
-
                 }
-
                 else
                 {
                     Player _player = new();
@@ -44,11 +39,8 @@ namespace Bowling
 
                     if (_player != null)
                     {
-
                         DisplayMatchesByPlayer(_player.PlayerID);
-
                     }
-
                 }
             }
         }

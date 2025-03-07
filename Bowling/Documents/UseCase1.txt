@@ -1,0 +1,43 @@
+﻿
+Use Case 1:
+
+Användare: Spelare
+Syfte med användning: Att starta och spela ett spel tillsammans med en vän
+
+Huvudfall: 
+1. Användaren möts av menyn och presenteras av två val, 'spela' och 'stats'.
+Användaren skriver in 'spela'.
+
+2. Applikationen presenterar spelintro-läget där användaren får skriva in hur många som ska spela.
+Användaren skriver in '2'.
+
+3. Användaren blir ombedd att skriva in namn på spelare 1.
+Användaren skriver in ett spelarnamn som redan är registrerat i databasen.
+I konsolen visas spelarnamnet som är tillagt för spelare 1.
+
+4. Användaren blir ombedd att skriva in namn på spelare 2.
+Användaren skriver in ett namn som inte är registrerat i databasen.
+
+5. Applikationen frågar om användaren vill registrera spelarnamnet.
+Användaren godkänner.
+
+6. Applikationen frågar efter en emailaddress att koppla till spelarnamnet.
+Användaren skriver in en emailaddress.
+Spelarnament och emailen registreras i databasen.
+
+6. Alla spelare (2/2) är registrerade och tillagda för spel och matchen startar.
+
+7. Applikationen presenterar varje persons poäng samt skriver ut vinnaren.
+
+8. Spelet avslutas och applikationen återgår till huvudmenyn.
+
+Alternativa fall:
+
+2a. Användaren skriver in en bokstav istället för en siffra.
+Applikationen ber användaren skriva in en giltig siffra. Återupprepa tills användaren skriver in en giltig siffra.
+
+5a. Användaren vill inte registrera spelarnamnet användaren skrivit in utan ett annat.
+Användaren godkänner inte.
+Applikationen återgår till 4.
+
+x. Användaren vill när som helst under processen avbryta spelet och skriver 'exit' för att återgå till huvudmenyn.
