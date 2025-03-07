@@ -1,0 +1,535 @@
+﻿using Bowling.Entities;
+
+namespace Bowling
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            while (true) {
+
+                Console.WriteLine("\nVälkommen till Bowlorama");
+
+                Console.WriteLine("Skriv 'spela' för att starta ett spel");
+                Console.WriteLine("Skriv 'stats' för att se statistik över tidigare matcher för en viss spelare");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case ("spela"):
+                        Game();
+                        break;
+                    case ("stats"):
+                        Stats stats = new();
+                        stats.StatsLoop();
+                        break;
+
+                }
+                
+                void Game()
+                {
+                    Game game = new();
+
+                    game.GameIntro();
+                    game.GameLoop();
+
+                }
+        
+            }
+        }
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+using Bowling.Entities;
+using Bowling.Repository.Repos;
+
+namespace Bowling
+{
+    internal class Game
+    {
+
+        public List<GamePlayer> GamePlayers { get; set; } = new();
+
+        private Player _player;
+        private int _numberOfPlayers;
+        PlayerRepo repo = new();
+
+
+        public void GameIntro()
+        {
+
+            Console.Write("Välj antal spelare(1-4): ");
+
+            bool gameReady = false;
+
+            _numberOfPlayers = int.Parse(Console.ReadLine()); //lägg till felhantering
+
+            while (!gameReady) {
+
+                for (int i = 1; i <= _numberOfPlayers; i++)
+                {
+
+                    ShowCurrentPlayers();
+
+                    Console.WriteLine("");
+
+                    Console.WriteLine($"Skriv in namn på spelare {i}:");
+
+                    
+                    string playerName = Console.ReadLine();
+
+                    Player foundPlayer = new();
+
+                    foundPlayer = repo.MatchingUserName(playerName);
+
+                    if (foundPlayer != null)
+                    {
+
+                        GamePlayer gamePlayer = new GamePlayer(foundPlayer);
+                        GamePlayers.Add(gamePlayer);
+                        Console.WriteLine("Spelare tillagd");
+                    }
+                    else
+                    {
+
+                        Console.WriteLine($"Spelare {playerName} inte hittad i databasen, skapa ny spelare med detta namn? j/n?");
+
+                        string prompt = Console.ReadLine();
+
+                        switch (prompt)
+                        {
+                            case ("j"):
+
+                                Console.WriteLine("Var vänlig fyll i email-adress: ");
+
+                                string email = Console.ReadLine();
+
+
+                                foundPlayer = repo.CreateAndReturnNewPlayer(playerName, email);
+
+                                GamePlayer gamePlayer = new GamePlayer(foundPlayer);
+                                GamePlayers.Add(gamePlayer);
+                                Console.WriteLine("Spelare tillagd");
+
+                                break;
+                            case ("n"):
+
+                                break;
+                            default:
+                                break;
+
+                        }
+
+                    }
+
+                }
+
+                ShowCurrentPlayers();
+
+                Console.WriteLine();
+                Console.WriteLine("\nTryck på en tangent för att starta spelet med dessa spelare.");
+
+                Console.ReadKey(intercept: true);
+                gameReady = true;             
+
+            }
+
+        }
+
+        public void GameLoop()
+        {
+            GameLogic.GameRandomScore(GamePlayers);
+
+            List<GamePlayer> sortedPlayers = GameLogic.SortPlacement(GamePlayers);
+
+            Console.WriteLine("\nResultat: ");
+
+            foreach(GamePlayer g in sortedPlayers)
+            {
+                Console.WriteLine($"{g.Player.UserName} : {g.Score} ");
+
+            }
+
+            MatchRepo matchRepo = new();
+            matchRepo.SaveRecord(GamePlayers);
+
+            Console.WriteLine($"Vinnare är: {sortedPlayers[0].Player.UserName}");
+
+            Console.WriteLine("\nTryck på en tangent för att gå tillbaka till menyn");
+            Console.ReadKey(intercept: true);
+
+
+        }
+
+        public void ShowCurrentPlayers()
+        {
+            Console.Write("\nTillagda spelare: ");
+            
+            foreach(GamePlayer p in GamePlayers)
+            {
+                Console.Write($" {p.Player.UserName},");
+
+            }
+
+        }
+      
+
+    }
+}
+using Bowling.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bowling
+{
+    public static class GameLogic
+    {
+        public static void GameRandomScore(List<GamePlayer> players)
+        {
+            Random random = new Random(); 
+            
+            foreach(GamePlayer p in players)
+            {
+                int playerPoints = random.Next(0, 301);
+
+                p.Score = playerPoints;
+
+            }
+                      
+        }
+
+        public static List<GamePlayer> SortPlacement(List<GamePlayer> players)
+        {
+
+            List<GamePlayer> sortedPlayers = players.OrderByDescending(p => p.Score).ToList();
+
+            return sortedPlayers;
+        }
+
+
+
+    }
+}
+using Bowling.Entities;
+using Bowling.Repository.Repos;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bowling
+{
+    public class Stats
+    {
+        private PlayerRepo _playerRepo = new();
+
+        public void StatsLoop()
+        {
+            while (true)
+            {
+
+                Console.WriteLine("\nSkriv in användarnamn på spelaren du vill se statistik från:");
+                Console.WriteLine("Skriv 'exit' för att gå tillbaka till huvudmenyn.");
+
+                string userInput = Console.ReadLine();
+
+
+
+                if (userInput.IsNullOrEmpty())
+                {
+
+
+                }
+                else if(userInput == "exit")
+                {
+                    return;
+
+                }
+
+                else
+                {
+                    Player _player = new();
+
+                    _player = _playerRepo.MatchingUserName(userInput);
+
+                    if (_player != null)
+                    {
+
+                        DisplayMatchesByPlayer(_player.PlayerID);
+
+                    }
+
+                }
+            }
+        }
+
+        public void DisplayMatchesByPlayer(int playerId)
+        {
+            MatchRepo repo = new();
+
+            var matches = repo.GetMatchesByPlayer(playerId);
+
+            if (matches.Count == 0)
+            {
+                Console.WriteLine("Inga matcher hittade för denna spelare.");
+                return;
+            }
+
+            Console.WriteLine($"Tidigare matcher:");
+            foreach (var matchPlayer in matches)
+            {
+                Console.WriteLine($"Match {matchPlayer.Match.Date}: {matchPlayer.Score} poäng");
+            }
+        }
+
+
+    }
+}
+using Bowling.Entities;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bowling.Repository.Repos
+{
+    public class MatchRepo
+    {
+        private readonly DataContext _context;
+        public MatchRepo()
+        {
+            _context = new DataContext();
+        }
+
+        public void SaveRecord(List<GamePlayer> gamePlayers)
+        {
+
+            Match match = new();
+
+            match.Date = DateTime.Now;
+            match.MatchPlayers = new List<MatchPlayer>();
+
+            foreach (var gamePlayer in gamePlayers)
+            {
+                MatchPlayer matchPlayer = new();
+
+                matchPlayer.MatchID = match.MatchID;
+                matchPlayer.PlayerID = gamePlayer.Player.PlayerID;
+                matchPlayer.Score = gamePlayer.Score;
+                matchPlayer.Match = match;
+
+                match.MatchPlayers.Add(matchPlayer);
+            }
+
+            _context.Matches.Add(match);
+            _context.SaveChanges();
+
+        }
+
+        public List<MatchPlayer> GetMatchesByPlayer(int playerId)
+        {
+            return _context.MatchPlayers
+                .Where(mp => mp.PlayerID == playerId) // Filter by player ID
+                .Include(mp => mp.Match) // Include match details
+                .ToList();
+        }
+
+
+    }
+}
+using Bowling.Entities;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bowling.Repository.Repos
+{
+    internal class PlayerRepo
+    {
+        private readonly DataContext _context;
+
+        public PlayerRepo()
+        {
+            _context = new DataContext();
+        }
+        public Player MatchingUserName(string condition)
+        {
+            var player = _context.Players.FirstOrDefault(p => p.UserName == condition);
+
+            if (player != null)
+            {
+                return player;
+            }
+
+            return null;
+
+        }
+                
+        public Player CreateAndReturnNewPlayer(string username, string email)
+        {
+            Player newPlayer = new();
+
+            newPlayer.UserName = username;
+            newPlayer.Email = email;
+
+            _context.Players.Add(newPlayer);
+            _context.SaveChanges();
+
+            return newPlayer;
+
+
+
+
+        }
+
+
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Bowling.Entities;
+
+namespace Bowling.Entities
+{
+     public class GamePlayer
+     {
+         public Player Player { get; set; }
+         public int Score { get; set; } = 0;
+
+         public GamePlayer(Player player)
+         {
+             Player = player;
+         }
+
+     }
+    
+}
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bowling.Entities
+{
+    public class Match
+    {
+        [Key]
+        public int MatchID { get; set; }
+
+        [Required]
+        public DateTime Date { get; set; }
+
+        public virtual List<MatchPlayer> MatchPlayers { get; set; }
+
+
+
+    }
+}
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bowling.Entities
+{
+    public class Player
+    {
+        [Key]
+        public int PlayerID { get; set; }
+
+        [Required]
+        public string UserName { get; set; }
+
+        [Required]
+        public string Email { get; set; }
+
+        public virtual List<MatchPlayer> MatchPlayers { get; set; }
+
+        public Player(string userName, string email)
+        {
+            UserName = userName;
+            Email = email;
+        }
+        public Player()
+        {
+                
+        }
+
+
+    }
+}
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Bowling.Entities
+{
+    public class MatchPlayer
+    {
+        public int MatchID { get; set; }
+        public int PlayerID { get; set; } 
+        public int Score { get; set; }
+
+        [ForeignKey("MatchID")]
+        public virtual Match Match { get; set; }
+
+        [ForeignKey("PlayerID")]
+        public virtual Player Player { get; set; }
+
+    }
+}
+using Bowling.Entities;
+using Microsoft.EntityFrameworkCore;
+using System.Configuration;
+
+namespace Bowling.Repository
+{
+    public class DataContext : DbContext
+    {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var connString = ConfigurationManager.ConnectionStrings["BowlingDB"].ConnectionString;
+            optionsBuilder.UseSqlServer(connString);
+        }
+
+        public virtual DbSet<Player> Players { get; set; }
+        public virtual DbSet<Match> Matches { get; set; }
+        public virtual DbSet<MatchPlayer> MatchPlayers { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MatchPlayer>()
+                .HasKey(mp => new { mp.MatchID, mp.PlayerID });
+        }
+
+    }
+}
