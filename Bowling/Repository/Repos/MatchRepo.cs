@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Bowling.Repository.Repos
 {
-    public class MatchRepo
+    public class MatchRepo //Här används Repository pattern för att samla all kommunikation med databasen i egna klasser
     {
         private readonly DataContext _context;
         public MatchRepo()
@@ -44,8 +44,8 @@ namespace Bowling.Repository.Repos
         public List<MatchPlayer> GetMatchesByPlayer(int playerId)
         {
             return _context.MatchPlayers
-                .Where(mp => mp.PlayerID == playerId) // Filter by player ID
-                .Include(mp => mp.Match) // Include match details
+                .Where(mp => mp.PlayerID == playerId)
+                .Include(mp => mp.Match)
                 .ToList();
         }
 

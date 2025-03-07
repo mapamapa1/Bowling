@@ -22,89 +22,104 @@ namespace Bowling
         public void GameIntro()
         {
 
-            Console.Write("Välj antal spelare(1-4): ");
+
 
             bool gameReady = false;
 
-            _numberOfPlayers = int.Parse(Console.ReadLine()); //lägg till felhantering
+            while (true)
+            {
+                Console.Write("Välj antal spelare(1-4): ");
+                string input = Console.ReadLine();
 
-            while (!gameReady) {
+                if (int.TryParse(input, out _numberOfPlayers) && _numberOfPlayers >= 1 && _numberOfPlayers <= 4)
+                {
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Ogiltigt val. Ange ett nummer mellan 1 och 4.");
+                }
+            }
 
-                for (int i = 1; i <= _numberOfPlayers; i++)
+            while (!gameReady)
+            {
+
+                ShowCurrentPlayers();
+
+                Console.WriteLine("");
+
+                Console.WriteLine($"Skriv in namn på spelare {GamePlayers.Count + 1}:");
+
+
+                string playerName = Console.ReadLine();
+
+                Player foundPlayer = new();
+
+                foundPlayer = repo.MatchingUserName(playerName);
+
+                if (foundPlayer != null)
                 {
 
-                    ShowCurrentPlayers();
+                    GamePlayer gamePlayer = new GamePlayer(foundPlayer);
+                    GamePlayers.Add(gamePlayer);
+                    Console.WriteLine("Spelare tillagd.");
+                }
+                else
+                {
 
-                    Console.WriteLine("");
+                    Console.WriteLine($"Spelare {playerName} inte hittad i databasen, skapa ny spelare med detta namn? j/n?");
 
-                    Console.WriteLine($"Skriv in namn på spelare {i}:");
+                    string prompt = Console.ReadLine();
 
-                    
-                    string playerName = Console.ReadLine();
-
-                    Player foundPlayer = new();
-
-                    foundPlayer = repo.MatchingUserName(playerName);
-
-                    if (foundPlayer != null)
+                    switch (prompt)
                     {
+                        case ("j"):
 
-                        GamePlayer gamePlayer = new GamePlayer(foundPlayer);
-                        GamePlayers.Add(gamePlayer);
-                        Console.WriteLine("Spelare tillagd.");
-                    }
-                    else
-                    {
+                            Console.WriteLine("Var vänlig fyll i email-adress: ");
 
-                        Console.WriteLine($"Spelare {playerName} inte hittad i databasen, skapa ny spelare med detta namn? j/n?");
-
-                        string prompt = Console.ReadLine();
-
-                        switch (prompt)
-                        {
-                            case ("j"):
-
-                                Console.WriteLine("Var vänlig fyll i email-adress: ");
-
-                                string email = Console.ReadLine();
+                            string email = Console.ReadLine();
 
 
-                                foundPlayer = repo.CreateAndReturnNewPlayer(playerName, email);
+                            foundPlayer = repo.CreateAndReturnNewPlayer(playerName, email);
 
-                                GamePlayer gamePlayer = new GamePlayer(foundPlayer);
-                                GamePlayers.Add(gamePlayer);
-                                Console.WriteLine("Spelare tillagd");
+                            GamePlayer gamePlayer = new GamePlayer(foundPlayer);
+                            GamePlayers.Add(gamePlayer);
+                            Console.WriteLine("Spelare tillagd");
 
-                                break;
-                            case ("n"):
+                            break;
+                        case ("n"):
 
-                                break;
-                            default:
-                                break;
-
-                        }
+                            break;
+                        default:
+                            break;
 
                     }
 
                 }
 
-                ShowCurrentPlayers();
+                if (GamePlayers.Count == _numberOfPlayers)
+                {
+                    gameReady = true;
+                }
 
-                Console.WriteLine();
-                Console.WriteLine("\nTryck på en tangent för att starta spelet med dessa spelare.");
-
-                Console.ReadKey(true);
-                gameReady = true;             
 
             }
+
+            ShowCurrentPlayers();
+
+            Console.WriteLine();
+            Console.WriteLine("\nTryck på en tangent för att starta spelet med dessa spelare.");
+
+            Console.ReadKey(true);
+            gameReady = true;                    
 
         }
 
         public void GameLoop()
         {
-            GameLogic.GameRandomScore(GamePlayers);
+            GameServices.GameRandomScore(GamePlayers);
 
-            List<GamePlayer> sortedPlayers = GameLogic.SortPlacement(GamePlayers);
+            List<GamePlayer> sortedPlayers = GameServices.SortPlacement(GamePlayers);
 
             Console.WriteLine("\nResultat: ");
 
@@ -125,7 +140,6 @@ namespace Bowling
 
 
         }
-
         public void ShowCurrentPlayers()
         {
             Console.Write("\nTillagda spelare: ");

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Bowling
 {
-    public static class GameLogic
+    public static class GameServices
     {
         public static void GameRandomScore(List<GamePlayer> players)
         {
@@ -19,19 +19,13 @@ namespace Bowling
 
                 p.Score = playerPoints;
 
-            }
-                      
+            }             
         }
-
         public static List<GamePlayer> SortPlacement(List<GamePlayer> players)
         {
-
             List<GamePlayer> sortedPlayers = players.OrderByDescending(p => p.Score).ToList();
 
             return sortedPlayers;
         }
-
-
-
     }
 }

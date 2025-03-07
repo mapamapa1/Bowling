@@ -16,8 +16,6 @@ namespace Bowling.Entities
          {
              Player = player;
          }
-
-     }
-    
+     }    
 }
 

@@ -15,18 +15,12 @@ namespace Bowling
         public static SingletonLogger Instance => _instance;
 
         public void Log(string message)
-        {
-            
-            using (StreamWriter writer = new StreamWriter(_filePath, append: false))
+        {          
+            using (StreamWriter writer = new StreamWriter(_filePath, append: true))
             {
                 writer.WriteLine($"{DateTime.Now}: {message}");
             }
-
         }
     }
-
-
-
-
 }
 

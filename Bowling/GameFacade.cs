@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bowling
 {
-    public class GameFacade
+    public class GameFacade  //här används Facade pattern för att 
     {
         private Game _game;
 

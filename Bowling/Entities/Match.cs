@@ -17,7 +17,5 @@ namespace Bowling.Entities
 
         public virtual List<MatchPlayer> MatchPlayers { get; set; }
 
-
-
     }
 }

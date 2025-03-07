@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Bowling.Repository.Repos
 {
-    internal class PlayerRepo
+    internal class PlayerRepo //Här används Repository pattern för att samla all kommunikation med databasen i egna klasser
     {
         private readonly DataContext _context;
 
@@ -40,9 +40,6 @@ namespace Bowling.Repository.Repos
             _context.SaveChanges();
 
             return newPlayer;
-
-
-
 
         }
 

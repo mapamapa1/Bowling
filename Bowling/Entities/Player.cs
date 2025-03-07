@@ -29,7 +29,5 @@ namespace Bowling.Entities
         {
                 
         }
-
-
     }
 }

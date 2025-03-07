@@ -7,8 +7,6 @@ namespace Bowling
         static void Main(string[] args)
         {
 
-            GameFacade gameFacade = new(); // Single entry point
-
             while (true) {
 
                 Console.WriteLine("\nVälkommen till Bowlorama!");
@@ -21,21 +19,13 @@ namespace Bowling
                 switch (choice)
                 {
                     case ("spela"):
+                        GameFacade gameFacade = new();
                         gameFacade.StartGame();
                         break;
                     case ("stats"):
                         Stats stats = new();
                         stats.StatsLoop();
                         break;
-
-                }
-                
-                void Game()
-                {
-                    Game game = new();
-
-                    game.GameIntro();
-                    game.GameLoop();
 
                 }
         
