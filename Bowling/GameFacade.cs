@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Bowling
 {
-    public class GameFacade  //här används Facade pattern för att 
+    public class GameFacade  
     {
         private Game _game;
 
@@ -17,6 +17,7 @@ namespace Bowling
 
         public void StartGame()
         {
+            // TODO: make a call to db here
             _game.GameIntro();
             _game.GameLoop();
         }

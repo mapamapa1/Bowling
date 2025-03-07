@@ -11,7 +11,7 @@ namespace Bowling
     {
         private static readonly SingletonLogger _instance = new();
         private SingletonLogger() { }
-        private string _filePath = "C:\\Users\\mrbab\\source\\repos\\Bowling\\Bowling\\Log.txt";
+        private string _filePath = "C:\\Users\\JeJAZ\\Source\\Repos\\Bowling\\Bowling\\Log.txt";
         public static SingletonLogger Instance => _instance;
 
         public void Log(string message)

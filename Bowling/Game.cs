@@ -11,18 +11,13 @@ namespace Bowling
 {
     internal class Game
     {
-
         public List<GamePlayer> GamePlayers { get; set; } = new();
 
         private Player _player;
         private int _numberOfPlayers;
         PlayerRepo repo = new();
-
-
         public void GameIntro()
         {
-
-
 
             bool gameReady = false;
 
@@ -151,7 +146,5 @@ namespace Bowling
             }
 
         }
-      
-
     }
 }

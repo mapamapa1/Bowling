@@ -1,8 +1,9 @@
 ﻿
-Use Case 1:
+Use Case 1 - Användaren spelar ett spel:
 
 Användare: Spelare
-Syfte med användning: Att starta och spela ett spel tillsammans med en vän
+Syfte med användning: Att starta och spela ett spel tillsammans med en vän.
+Förutsättningar: Användaren befinner sig vid huvudmenyn.
 
 Huvudfall: 
 1. Användaren möts av menyn och presenteras av två val, 'spela' och 'stats'.
@@ -38,6 +39,6 @@ Applikationen ber användaren skriva in en giltig siffra. Återupprepa tills anv
 
 5a. Användaren vill inte registrera spelarnamnet användaren skrivit in utan ett annat.
 Användaren godkänner inte.
-Applikationen återgår till 4.
+Applikationen återgår till punkt 4.
 
 x. Användaren vill när som helst under processen avbryta spelet och skriver 'exit' för att återgå till huvudmenyn.
